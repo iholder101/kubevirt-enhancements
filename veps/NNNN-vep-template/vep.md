@@ -29,7 +29,7 @@ Items marked with (R) are required *prior to targeting to a milestone / release*
 ## Overview
 
 <!--
-Provide a brief overview of the topic)
+Provide a brief overview of the topic
 -->
 
 ## Motivation
