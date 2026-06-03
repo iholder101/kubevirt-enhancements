@@ -105,6 +105,8 @@ Therefore, use them conservatively and only for true invariants.
   to a kubebuilder enum is a breaking schema change.
 
 Use VAPs for these validations instead.
+For a detailed analysis of the operational and evolution risks of baking constraints into the OpenAPI
+schema, see [API Schema Validation Analysis](api_schema_validation_analysis.md).
 
 **Note on existing markers**: KubeVirt already has kubebuilder validation markers that do not meet
 the above criteria. Removing them would be a breaking API change, so they will remain as-is.
@@ -278,6 +280,12 @@ of the underlying mechanism.
 
 Unit testing of CEL expressions is available using a vendored CEL evaluation library
 introduced in [#17790](https://github.com/kubevirt/kubevirt/pull/17790).
+
+## Further Reading
+
+- [API Schema Validation Analysis](api_schema_validation_analysis.md) — comprehensive analysis
+  of the operational and evolution risks of hard schema validation, covering general API design
+  paradigms, Kubernetes API philosophy, and the benefits of CEL-based declarative validation.
 
 ## Implementation History
 
