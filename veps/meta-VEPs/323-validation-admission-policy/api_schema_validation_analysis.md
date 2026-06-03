@@ -60,6 +60,11 @@ CEL allows developers to inject highly granular validation rules directly into t
 Replicas int32 `json:"replicas"`
 ```
 
+For a detailed walkthrough of how kubebuilder compiles these markers into CRD-embedded CEL rules,
+how the API server executes them as part of schema validation (distinct from the admission phase),
+and how this differs architecturally from `ValidatingAdmissionPolicy`, see
+[Deep Dive: CRD-Level CEL vs. VAP](k8s_cel_validation_deep_dive.md).
+
 ### 3.2 Why CEL Balances Client and Server Requirements
 CEL validation effectively satisfies both modern API evolution goals and Kubernetes control plane requirements:
 

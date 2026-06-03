@@ -85,28 +85,36 @@ This VEP establishes when to use each mechanism.
 
 Validation in KubeVirt should use the following mechanisms, in order of preference:
 
-#### 1. Kubebuilder markers (OpenAPI schema validation)
+#### 1. Classic kubebuilder markers (OpenAPI schema validation)
 
-Use kubebuilder validation markers **only** for simple, single-field constraints
-that are certain to never change. Examples:
+Use classic kubebuilder validation markers (e.g., `+kubebuilder:validation:Required`,
+`+kubebuilder:validation:Minimum`, `+kubebuilder:validation:Enum`) **only** for simple,
+single-field constraints that are certain to never change. Examples:
 
 - A string field that must not be empty
 - An integer field that must not be negative
 
-These constraints are baked into the CRD's OpenAPI schema. Once published,
-they are effectively permanent - changing them is a breaking API change.
+These constraints are baked directly into the CRD's OpenAPI schema as structural fields.
+Once published, they are effectively permanent — changing them is a breaking API change.
 Therefore, use them conservatively and only for true invariants.
 
-**Do not** use kubebuilder markers for constraints that may evolve over time. Examples of what to avoid:
+**Do not** use classic kubebuilder markers for constraints that may evolve over time.
+Examples of what to avoid:
 
 - `+kubebuilder:validation:Minimum` / `+kubebuilder:validation:Maximum` - acceptable ranges tend to change as
   requirements evolve (e.g., a port field might later need to allow 0 for auto-assignment).
 - `+kubebuilder:validation:Enum` - enum values almost always grow over time. Adding a new value
   to a kubebuilder enum is a breaking schema change.
 
-Use VAPs for these validations instead.
 For a detailed analysis of the operational and evolution risks of baking constraints into the OpenAPI
 schema, see [API Schema Validation Analysis](api_schema_validation_analysis.md).
+
+**Note**: Kubebuilder also supports CRD-embedded CEL rules via `+kubebuilder:validation:XValidation`
+markers. These are more expressive than classic markers and execute at schema validation time,
+before the admission phase. They are a valid alternative to VAPs for type-local validations
+(i.e., rules scoped to `self` and `oldSelf`); use VAPs when broader context is needed
+(e.g., `request`, `namespace`, `params`) or when the validation spans multiple resource types.
+See [Deep Dive: CRD-Level CEL vs. VAP](k8s_cel_validation_deep_dive.md) for a detailed comparison.
 
 **Note on existing markers**: KubeVirt already has kubebuilder validation markers that do not meet
 the above criteria. Removing them would be a breaking API change, so they will remain as-is.
@@ -286,6 +294,10 @@ introduced in [#17790](https://github.com/kubevirt/kubevirt/pull/17790).
 - [API Schema Validation Analysis](api_schema_validation_analysis.md) — comprehensive analysis
   of the operational and evolution risks of hard schema validation, covering general API design
   paradigms, Kubernetes API philosophy, and the benefits of CEL-based declarative validation.
+- [Deep Dive: CRD-Level CEL vs. VAP](k8s_cel_validation_deep_dive.md) — architectural comparison
+  of CRD-embedded CEL (`x-kubernetes-validations`) and `ValidatingAdmissionPolicy`, including the
+  Kubernetes request pipeline, how kubebuilder compiles `XValidation` markers, and the structural
+  differences in scope, context, and operational blast radius.
 
 ## Implementation History
 
